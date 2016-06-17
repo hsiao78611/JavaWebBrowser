@@ -1,20 +1,11 @@
 /**
  * Created by Jeff-Wang on 2016/6/12.
  */
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import chrriis.common.UIUtils;
 import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class Main {
     public static void main(String[] args){
