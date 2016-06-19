@@ -39,7 +39,7 @@ import chrriis.dj.nativeswing.swtimpl.components.DefaultWebBrowserDecorator.WebB
 
 @SuppressWarnings({ "unused", "serial" })
 public class WebBrowserFrame extends JPanel{
-		
+	static JTabbedPane tabbedPane;
     public WebBrowserFrame(){
         super(new BorderLayout());
         JPanel webBrowserPanel = new JPanel(new BorderLayout());        
@@ -52,7 +52,7 @@ public class WebBrowserFrame extends JPanel{
         };
         
         // new a default tab pane which contains a web browser
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         
         // set bars
@@ -62,7 +62,7 @@ public class WebBrowserFrame extends JPanel{
         
         // add a listener for new tab
         addWebBrowserListener(tabbedPane, webBrowser); 
-
+        
         // add a default tab
         webBrowser.navigate("http://www.google.com");
         tabbedPane.addTab("Startup page", webBrowser); // first page is a tab
@@ -89,10 +89,26 @@ public class WebBrowserFrame extends JPanel{
         		// We completely override this method so we decide which buttons to add
         		final JButton historyButton = new JButton("[[History]]");
         		final JButton cookieButton = new JButton("[[Cookie]]");
+        		final String LS = System.getProperty("line.separator");
         		historyButton.addActionListener(new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
 //        				JOptionPane.showMessageDialog(historyButton, "History Button was pressed!");
-        				webBrowser.navigate("http://www.google.com");
+        				SwingUtilities.invokeLater(new Runnable() {
+        					public void run() {
+        						JWebBrowser webBrowser = new JWebBrowser();
+        						webBrowser.setHTMLContent(
+                				        "<html>" + LS +
+                				        "  <body>" + LS +
+                				        "    <a href=\"http://java.sun.com\">http://java.sun.com</a><br/>" + LS +
+                				        "    <a href=\"http://www.google.com\">http://www.google.com</a><br/>" + LS +
+                				        "    <a href=\"http://www.eclipse.org\">http://www.eclipse.org</a><br/>" + LS +
+                				        "    <a href=\"http://www.yahoo.com\">http://www.yahoo.com</a><br/>" + LS +
+                				        "    <a href=\"http://www.microsoft.com\">http://www.microsoft.com</a><br/>" + LS +
+                				        "  </body>" + LS +
+                				        "</html>");
+        						tabbedPane.addTab("History", webBrowser);
+        		            }
+        		          });
         			}
         		});
         		cookieButton.addActionListener(new ActionListener() {
@@ -114,7 +130,7 @@ public class WebBrowserFrame extends JPanel{
     private static void addWebBrowserListener(final JTabbedPane tabbedPane, final JWebBrowser webBrowser) {
     	webBrowser.addWebBrowserListener(new WebBrowserAdapter() {
     		@Override
-			public void locationChanging(WebBrowserNavigationEvent e) {
+			public void locationChanging(WebBrowserNavigationEvent e) { // just for new resource location
 				final String newResourceLocation = e.getNewResourceLocation();
 				DisplayPanel.setHistory(newResourceLocation);
     		}
