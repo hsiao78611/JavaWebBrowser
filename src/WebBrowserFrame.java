@@ -87,15 +87,45 @@ public class WebBrowserFrame extends JPanel{
         	@Override
         	protected void addButtonBarComponents(WebBrowserButtonBar buttonBar) {
         		// We completely override this method so we decide which buttons to add
+        		final JButton newTabButton = new JButton("[[NewTab]]");
         		final JButton historyButton = new JButton("[[History]]");
         		final JButton cookieButton = new JButton("[[Cookie]]");
+        		newTabButton.addActionListener(new ActionListener() {
+        			public void actionPerformed(ActionEvent e) {
+        				SwingUtilities.invokeLater(new Runnable() {
+        					public void run() {
+        						JWebBrowser webBrowser = new JWebBrowser() {
+        		    	        	// set customized decorator
+        		    	        	@Override
+        		    	        	protected WebBrowserDecorator createWebBrowserDecorator(Component renderingComponent) {
+        		    	            	return createCustomWebBrowserDecorator(this, renderingComponent);
+        		    	    		}
+        		    	        };
+        		    	        // add a listener for new tab
+        		    	        addWebBrowserListener(tabbedPane, webBrowser); 
+        						tabbedPane.addTab("NewTab", webBrowser);   
+        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
+        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
+        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); // add close button
+        		    					break;
+        		    				}
+        		    			}
+        					}
+        				});
+        			}
+        		});
         		final String LS = System.getProperty("line.separator");
         		historyButton.addActionListener(new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
-//        				JOptionPane.showMessageDialog(historyButton, "History Button was pressed!");
         				SwingUtilities.invokeLater(new Runnable() {
         					public void run() {
-        						JWebBrowser webBrowser = new JWebBrowser();
+        						JWebBrowser webBrowser = new JWebBrowser() {
+        		    	        	// set customized decorator
+        		    	        	@Override
+        		    	        	protected WebBrowserDecorator createWebBrowserDecorator(Component renderingComponent) {
+        		    	            	return createCustomWebBrowserDecorator(this, renderingComponent);
+        		    	    		}
+        		    	        };
         						webBrowser.setHTMLContent(
                 				        "<html>" + LS +
                 				        "  <body>" + LS +
@@ -106,9 +136,12 @@ public class WebBrowserFrame extends JPanel{
                 				        "    <a href=\"http://www.microsoft.com\">http://www.microsoft.com</a><br/>" + LS +
                 				        "  </body>" + LS +
                 				        "</html>");
-        						tabbedPane.addTab("History", webBrowser);
-        		            }
-        		          });
+        						
+        						 // add a listener for new tab
+        				        addWebBrowserListener(tabbedPane, webBrowser); 
+        						tabbedPane.addTab("History", webBrowser);      		            
+        					}
+        				});
         			}
         		});
         		cookieButton.addActionListener(new ActionListener() {
@@ -118,6 +151,7 @@ public class WebBrowserFrame extends JPanel{
         		});
         		buttonBar.add(buttonBar.getBackButton());
         		buttonBar.add(buttonBar.getForwardButton());
+        		buttonBar.add(newTabButton);
         		buttonBar.add(historyButton);
         		buttonBar.add(cookieButton);
         		buttonBar.add(buttonBar.getReloadButton());
@@ -132,7 +166,12 @@ public class WebBrowserFrame extends JPanel{
     		@Override
 			public void locationChanging(WebBrowserNavigationEvent e) { // just for new resource location
 				final String newResourceLocation = e.getNewResourceLocation();
-				DisplayPanel.setHistory(newResourceLocation);
+				try {
+					DisplayPanel.setHistory(newResourceLocation);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     		@Override
     		public void titleChanged(WebBrowserEvent e) {
@@ -149,14 +188,20 @@ public class WebBrowserFrame extends JPanel{
     		}
     		@Override
     		public void windowWillOpen(WebBrowserWindowWillOpenEvent e) {
-    			JWebBrowser newWebBrowser = new JWebBrowser();
+    			JWebBrowser newWebBrowser = new JWebBrowser() {
+    	        	// set customized decorator
+    	        	@Override
+    	        	protected WebBrowserDecorator createWebBrowserDecorator(Component renderingComponent) {
+    	            	return createCustomWebBrowserDecorator(this, renderingComponent);
+    	    		}
+    	        };
     			addWebBrowserListener(tabbedPane, newWebBrowser);
-    			tabbedPane.addTab("New Tab", newWebBrowser);
+    			tabbedPane.addTab("NewTab", newWebBrowser);
     			e.setNewWebBrowser(newWebBrowser);
     		}
     		@Override
     		public void windowOpening(WebBrowserWindowOpeningEvent e) {
-    			e.getWebBrowser().setMenuBarVisible(true);
+//    			e.getWebBrowser().setMenuBarVisible(true);
     		}
     	});
     }
