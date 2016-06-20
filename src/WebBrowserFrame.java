@@ -14,20 +14,12 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -46,12 +38,11 @@ import org.xml.sax.SAXException;
 public class WebBrowserFrame extends JPanel{
 
 	private static JMenu bookmarkMenu;
-
 	static JTabbedPane tabbedPane;
 
     public WebBrowserFrame(){
         super(new BorderLayout());
-        JPanel webBrowserPanel = new JPanel(new BorderLayout());        
+		JPanel webBrowserPanel = new JPanel(new BorderLayout());
         final JWebBrowser webBrowser = new JWebBrowser(){
         	// set customized decorator
         	@Override
@@ -106,7 +97,21 @@ public class WebBrowserFrame extends JPanel{
 					});
 					bookmarkMenu.add(test);
 				}
-				bookmarkMenu.add(new JMenuItem("Manage Bookmark"));
+				JMenuItem manageBookMark = new JMenuItem("Delete Bookmark");
+				manageBookMark.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFrame frame = new JFrame();
+						ArrayList<String> addressList = getXMLValue();
+						int dialogButton = JOptionPane.YES_NO_OPTION;
+						String selectLink = JOptionPane.showInputDialog(frame, "Pick a link to delete", "Delete a Bookmark", dialogButton,
+								null, addressList.toArray(), "Titan").toString();
+						if(dialogButton == JOptionPane.YES_OPTION){
+							deleteXMLElement(selectLink);
+						}
+					}
+				});
+				bookmarkMenu.add(manageBookMark);
 				menuBar.add(bookmarkMenu);
 
 				//set action listener of bookmark
@@ -282,7 +287,6 @@ public class WebBrowserFrame extends JPanel{
 			}else{
 				createXMLForBookmark(address);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -347,8 +351,43 @@ public class WebBrowserFrame extends JPanel{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-
+		//need to find someway to reload the JPanel
 		return getXMLElement;
+	}
+
+	private static void deleteXMLElement(String deleteLink){
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
+			NodeList nList = doc.getElementsByTagName("Data");
+			for (int i = 0; i < nList.getLength(); i++)
+			{
+				Node nNode = nList.item(i);
+				Element eElement = (Element) nNode;
+				String address = eElement.getElementsByTagName("Address").item(0).getTextContent().toString();
+				if(address.equals(deleteLink)){
+					nNode.getParentNode().removeChild(eElement);
+					break;
+				}
+			}
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml"));
+			transformer.transform(source, result);
+
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
 	}
 }
