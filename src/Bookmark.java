@@ -21,14 +21,18 @@ import java.util.ArrayList;
  * Created by Jeff-Wang on 2016/6/21.
  */
 public class Bookmark {
+	@SuppressWarnings("unused")
+	private static String originPath = "C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml";
+	private static String newPath = "bookmark.xml";
+	
     public static void addBookMark(String address){
         try {
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            File f = new File("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
+            File f = new File(newPath);
             if(f.exists() && !f.isDirectory()) {
-                Document document = documentBuilder.parse("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
+                Document document = documentBuilder.parse(newPath);
 
                 Element root = document.getDocumentElement();
 
@@ -45,7 +49,7 @@ public class Bookmark {
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
-                StreamResult result = new StreamResult("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
+                StreamResult result = new StreamResult(newPath);
                 transformer.transform(source, result);
             }else{
                 createXMLForBookmark(address);
@@ -79,10 +83,8 @@ public class Bookmark {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml"));
+            StreamResult result = new StreamResult(new File(newPath));
             transformer.transform(source, result);
-            System.out.println("File saved!");
-
         } catch (ParserConfigurationException pce) {
             pce.printStackTrace();
 
@@ -97,9 +99,9 @@ public class Bookmark {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            File f = new File("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
+            File f = new File(newPath);
             if(f.exists() && !f.isDirectory()) {
-                Document document = builder.parse("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
+                Document document = builder.parse(newPath);
                 NodeList nList = document.getElementsByTagName("Data");
                 for (int i = 0; i < nList.getLength(); i++)
                 {
@@ -128,7 +130,7 @@ public class Bookmark {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            Document doc = docBuilder.parse("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
+            Document doc = docBuilder.parse(newPath);
             NodeList nList = doc.getElementsByTagName("Data");
             for (int i = 0; i < nList.getLength(); i++)
             {
@@ -143,7 +145,7 @@ public class Bookmark {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml"));
+            StreamResult result = new StreamResult(new File(newPath));
             transformer.transform(source, result);
 
         } catch (ParserConfigurationException pce) {

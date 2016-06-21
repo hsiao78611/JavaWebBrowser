@@ -97,7 +97,8 @@ public class HistoryXML {
 		for (int i = 0; i < history_Vector.size(); i++) {
 			// get each history information
 			HistoryBean historyBean = (HistoryBean) history_Vector.get(i);
-			
+			if (historyBean.getURL().equals("about:blank"))
+				continue;
 			if (i>0) {
 				HistoryBean previousBean = (HistoryBean) history_Vector.get(i-1);
 				if (historyBean.getURL().equals(previousBean.getURL()))
@@ -129,7 +130,6 @@ public class HistoryXML {
 	DOMSource source = new DOMSource(doc);
 	StreamResult result = new StreamResult(new File(outFile));
 	transformer.transform(source, result);
-	System.out.println("File saved!");
 	}
 	
 	public String printXMLFile() throws Exception {

@@ -8,25 +8,17 @@ import javax.swing.SwingUtilities;
 import chrriis.common.UIUtils;
 import chrriis.dj.nativeswing.swtimpl.NativeInterface;
 
-import chrriis.common.UIUtils;
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-
-import javax.swing.*;
-import java.awt.*;
->>>>>>> master
-
 public class Main {
 		   
     private static void createAndShowGUI() {
         //Create and set up the window.              
-        JFrame frame = new JFrame("DJ Native Swing Test");
+        JFrame frame = new JFrame("Java Web Browser");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         //Create and set up the content pane.
         frame.getContentPane().add(new WebBrowserFrame(), BorderLayout.CENTER);
-        frame.getContentPane().add(new DisplayPanel(), BorderLayout.SOUTH);
         //Display the window.
-        frame.setSize(800, 750);
+        frame.setSize(800, 600);
         frame.setLocationByPlatform(true);
         frame.setVisible(true);
     }

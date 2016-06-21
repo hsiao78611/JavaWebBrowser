@@ -3,6 +3,7 @@
  */
 
 import chrriis.dj.nativeswing.swtimpl.components.*;
+import sun.swing.ImageIconUIResource;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,7 +63,9 @@ public class WebBrowserFrame extends JPanel{
         	protected void addMenuBarComponents(WebBrowserMenuBar menuBar) {
         		// We let the default menus to be added and then we add ours.
         		super.addMenuBarComponents(menuBar);
-        		JMenu myMenu = new JMenu("[[Features]]");
+        		JMenu myMenu = new JMenu("Features");
+        		
+        		// add clear history menu item into head bar
             	JMenuItem clearHistory = new JMenuItem("Clear History");
             	clearHistory.addActionListener(new ActionListener() {
 					@Override
@@ -83,22 +86,8 @@ public class WebBrowserFrame extends JPanel{
 						}	
 					}
 				});
-            	myMenu.add(clearHistory);
-            	menuBar.add(myMenu);
 
-				//add bookmark to head bar
-            	JMenu bookmarkMenu = new JMenu("[[bookMark]]");
-				ArrayList<String> bookmarkList = Bookmark.getXMLValue();
-				for(int i=0;i<bookmarkList.size();i++){
-					JMenuItem test = new JMenuItem(bookmarkList.get(i));
-					test.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							webBrowser.navigate(test.getText());
-						}
-					});
-					bookmarkMenu.add(test);
-				}
+            	// add delete bookmark menu item into head bar
 				JMenuItem manageBookMark = new JMenuItem("Delete Bookmark");
 				manageBookMark.addActionListener(new ActionListener() {
 					@Override
@@ -113,19 +102,23 @@ public class WebBrowserFrame extends JPanel{
 						}
 					}
 				});
-				bookmarkMenu.add(manageBookMark);
-				menuBar.add(bookmarkMenu);
-
-				//set action listener of bookmark
-
+				
+				myMenu.add(manageBookMark);
+				myMenu.add(clearHistory);
+            	menuBar.add(myMenu);
 			}
         	@Override
         	protected void addButtonBarComponents(WebBrowserButtonBar buttonBar) {
+        		// set button icons
+        		ImageIcon add, clock, star;
+        		add = new ImageIcon("icon/add.gif");
+        		clock = new ImageIcon("icon/clock.gif");
+        		star = new ImageIcon("icon/star.png");
+        		
         		// We completely override this method so we decide which buttons to add
-        		final JButton newTabButton = new JButton("[[NewTab]]");
-        		final JButton historyButton = new JButton("[[History]]");
-//        		final JButton cookieButton = new JButton("[[Cookie]]");
-        		final JButton bookmarkButton = new JButton("[[BookMark]]");
+        		final JButton newTabButton = new JButton(add);
+        		final JButton historyButton = new JButton(clock);
+        		final JButton bookmarkButton = new JButton(star);
         		
         		newTabButton.addActionListener(new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
@@ -141,9 +134,10 @@ public class WebBrowserFrame extends JPanel{
         		    	        // add a listener for new tab
         		    	        addWebBrowserListener(tabbedPane, webBrowser); 
         						tabbedPane.addTab("NewTab", webBrowser);   
+        						// add close button
         						for(int i=0; i<tabbedPane.getTabCount(); i++) {
         		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
-        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); // add close button
+        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); 
         		    					break;
         		    				}
         		    			}
@@ -184,11 +178,7 @@ public class WebBrowserFrame extends JPanel{
         				});
         			}
         		});
-//        		cookieButton.addActionListener(new ActionListener() {
-//        			public void actionPerformed(ActionEvent e) {
-//        				JOptionPane.showMessageDialog(cookieButton, "Cookie Button was pressed!");
-//        			}
-//        		});
+
 				bookmarkButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -204,7 +194,6 @@ public class WebBrowserFrame extends JPanel{
         		buttonBar.add(buttonBar.getForwardButton());
         		buttonBar.add(newTabButton);
         		buttonBar.add(historyButton);
-//        		buttonBar.add(cookieButton);
 				buttonBar.add(bookmarkButton);
         		buttonBar.add(buttonBar.getReloadButton());
         		buttonBar.add(buttonBar.getStopButton());
@@ -216,10 +205,9 @@ public class WebBrowserFrame extends JPanel{
     private static void addWebBrowserListener(final JTabbedPane tabbedPane, final JWebBrowser webBrowser) {
     	webBrowser.addWebBrowserListener(new WebBrowserAdapter() {
     		@Override
-			public void locationChanging(WebBrowserNavigationEvent e) { // just for new resource location
+			public void locationChanging(WebBrowserNavigationEvent e) {
 				final String pageTitle = e.getWebBrowser().getPageTitle();
 				final String pageLocation = e.getWebBrowser().getResourceLocation();
-				DisplayPanel.setHistory(pageTitle); // only for test
 				// record browsing history
 				historyXML.history_Vector = new Vector<HistoryBean>();
 				try {
@@ -239,7 +227,8 @@ public class WebBrowserFrame extends JPanel{
     						return;
     					}
     					tabbedPane.setTitleAt(i, webBrowser.getPageTitle());
-    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); // add close button
+    					// add close button
+    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane));
     					break;
     				}
     			}
