@@ -22,6 +22,7 @@ public class HistoryXML {
 	}
 	
 	void readXMLFile(String inFile) throws Exception {
+		history_Vector.clear();
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = null;
 		try {
@@ -97,7 +98,7 @@ public class HistoryXML {
 		for (int i = 0; i < history_Vector.size(); i++) {
 			// get each history information
 			HistoryBean historyBean = (HistoryBean) history_Vector.get(i);
-			if (historyBean.getURL().equals("about:blank"))
+			if (historyBean.getURL().equals("about:blank") || historyBean.getTitle().equals("about:blank"))
 				continue;
 			else if (i>0) {
 				HistoryBean previousBean = (HistoryBean) history_Vector.get(i-1);
