@@ -100,6 +100,13 @@ public class WebBrowserFrame extends JPanel{
         						 // add a listener for new tab
         				        addWebBrowserListener(tabbedPane, webBrowser); 
         						tabbedPane.addTab("History", webBrowser);
+        						// add close button
+        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
+        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
+        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane));
+        		    					break;
+        		    				}
+        		    			}
         					}
         				});
         			}
@@ -196,7 +203,14 @@ public class WebBrowserFrame extends JPanel{
         		    	        };
         		    	        // add a listener for new tab
         		    	        addWebBrowserListener(tabbedPane, webBrowser); 
-        						tabbedPane.addTab("NewTab", webBrowser);   
+        						tabbedPane.addTab("NewTab", webBrowser);
+		    					// add close button
+        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
+        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
+        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane));
+        		    					break;
+        		    				}
+        		    			}
         					}
         				});
         			}
@@ -226,6 +240,13 @@ public class WebBrowserFrame extends JPanel{
         						 // add a listener for new tab
         				        addWebBrowserListener(tabbedPane, webBrowser); 
         						tabbedPane.addTab("History", webBrowser); 
+        						// add close button
+        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
+        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
+        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane));
+        		    					break;
+        		    				}
+        		    			}
         					}
         				});
         			}
