@@ -44,14 +44,26 @@ public class WebBrowserFrame extends JPanel{
         webBrowser.setMenuBarVisible(true);
         webBrowser.setStatusBarVisible(true);
         
-        // add a listener for new tab
-        addWebBrowserListener(tabbedPane, webBrowser); 
+        // set the first tab
+        SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+    	        // add a listener for new tab
+    	        addWebBrowserListener(tabbedPane, webBrowser); 
+				tabbedPane.addTab("NewTab", webBrowser);   
+				// add close button
+				for(int i=0; i<tabbedPane.getTabCount(); i++) {
+    				if(tabbedPane.getComponentAt(i) == webBrowser) {
+    					System.out.println(webBrowser.getPageTitle());
+//    					tabbedPane.setTitleAt(index, title);
+    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); 
+    					break;
+    				}
+    			}
+			}
+		});
         
-        // add a default tab
-        webBrowser.navigate("http://www.google.com");
-        tabbedPane.addTab("Startup page", webBrowser); // first page is a tab
         webBrowserPanel.add(tabbedPane, BorderLayout.CENTER);
-        add(webBrowserPanel, BorderLayout.CENTER);
+        add(webBrowserPanel, BorderLayout.CENTER);			
     }
     
     // for customer button and menu item

@@ -99,6 +99,9 @@ public class ButtonTabComponent extends JPanel {
             int i = pane.indexOfTabComponent(ButtonTabComponent.this);
             if (i != -1) {
                 pane.remove(i);
+                // close browser while the last tab is closed
+                if (pane.getTabCount()==0)
+                	System.exit(1);
             }
         }
 
