@@ -87,18 +87,34 @@ public class WebBrowserFrame extends JPanel{
             	menuBar.add(myMenu);
 
 				//add bookmark to head bar
-            	JMenu bookmarkMenu = new JMenu("[[bookMark]]");
-				ArrayList<String> bookmarkList = Bookmark.getXMLValue();
-				for(int i=0;i<bookmarkList.size();i++){
-					JMenuItem test = new JMenuItem(bookmarkList.get(i));
-					test.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							webBrowser.navigate(test.getText());
+            	JMenu bookmarkMenu = new JMenu("[[Bookmark]]");
+				JMenuItem showBookMark = new JMenuItem("Show Bookmark");
+				showBookMark.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFrame frame = new JFrame();
+						ArrayList<String> addressList = Bookmark.getXMLValue();
+						int dialogButton = JOptionPane.YES_NO_OPTION;
+						String selectLink = JOptionPane.showInputDialog(frame,
+								"Choose one", "Bookmark",
+								JOptionPane.INFORMATION_MESSAGE, null,
+								addressList.toArray(), addressList.get(0)).toString();
+						if(dialogButton == JOptionPane.YES_OPTION){
+							webBrowser.navigate(selectLink);
 						}
-					});
-					bookmarkMenu.add(test);
-				}
+					}
+				});
+				bookmarkMenu.add(showBookMark);
+//				for(int i=0;i<bookmarkList.size();i++){
+//					JMenuItem test = new JMenuItem(bookmarkList.get(i));
+//					test.addActionListener(new ActionListener() {
+//						@Override
+//						public void actionPerformed(ActionEvent e) {
+//							webBrowser.navigate(test.getText());
+//						}
+//					});
+//					bookmarkMenu.add(test);
+//				}
 				JMenuItem manageBookMark = new JMenuItem("Delete Bookmark");
 				manageBookMark.addActionListener(new ActionListener() {
 					@Override
@@ -106,8 +122,10 @@ public class WebBrowserFrame extends JPanel{
 						JFrame frame = new JFrame();
 						ArrayList<String> addressList = Bookmark.getXMLValue();
 						int dialogButton = JOptionPane.YES_NO_OPTION;
-						String selectLink = JOptionPane.showInputDialog(frame, "Pick a link to delete", "Delete a Bookmark", dialogButton,
-								null, addressList.toArray(), "Titan").toString();
+						String selectLink = JOptionPane.showInputDialog(null,
+								"Pick a link to delete", "Delete",
+								JOptionPane.WARNING_MESSAGE, null,
+								addressList.toArray(), addressList.get(0)).toString();
 						if(dialogButton == JOptionPane.YES_OPTION){
 							Bookmark.deleteXMLElement(selectLink);
 						}

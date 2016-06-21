@@ -13,7 +13,6 @@ import chrriis.dj.nativeswing.swtimpl.NativeInterface;
 
 import javax.swing.*;
 import java.awt.*;
->>>>>>> master
 
 public class Main {
 		   
