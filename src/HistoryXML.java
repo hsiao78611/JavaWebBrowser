@@ -2,7 +2,11 @@
 import java.io.*;
 
 import javax.xml.parsers.*;
-import org.apache.crimson.tree.XmlDocument;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.*;
 import java.util.Vector;
 
@@ -119,11 +123,13 @@ public class HistoryXML {
 			title.appendChild(tTitle);
 		}
 		
-	FileOutputStream outStream = new FileOutputStream(outFile);
-	OutputStreamWriter outWriter = new OutputStreamWriter(outStream);
-	((XmlDocument) doc).write(outWriter, "UTF-8");
-	outWriter.close();
-	outStream.close();
+	// write the content into xml file
+	TransformerFactory transformerFactory = TransformerFactory.newInstance();
+	Transformer transformer = transformerFactory.newTransformer();
+	DOMSource source = new DOMSource(doc);
+	StreamResult result = new StreamResult(new File(outFile));
+	transformer.transform(source, result);
+	System.out.println("File saved!");
 	}
 	
 	public String printXMLFile() throws Exception {
