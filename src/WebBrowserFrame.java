@@ -53,8 +53,6 @@ public class WebBrowserFrame extends JPanel{
 				// add close button
 				for(int i=0; i<tabbedPane.getTabCount(); i++) {
     				if(tabbedPane.getComponentAt(i) == webBrowser) {
-    					System.out.println(webBrowser.getPageTitle());
-//    					tabbedPane.setTitleAt(index, title);
     					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); 
     					break;
     				}
@@ -101,13 +99,7 @@ public class WebBrowserFrame extends JPanel{
         						
         						 // add a listener for new tab
         				        addWebBrowserListener(tabbedPane, webBrowser); 
-        						tabbedPane.addTab("History", webBrowser); 
-        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
-        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
-        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); // add close button
-        		    					break;
-        		    				}
-        		    			}
+        						tabbedPane.addTab("History", webBrowser);
         					}
         				});
         			}
@@ -205,13 +197,6 @@ public class WebBrowserFrame extends JPanel{
         		    	        // add a listener for new tab
         		    	        addWebBrowserListener(tabbedPane, webBrowser); 
         						tabbedPane.addTab("NewTab", webBrowser);   
-        						// add close button
-        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
-        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
-        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); 
-        		    					break;
-        		    				}
-        		    			}
         					}
         				});
         			}
@@ -241,12 +226,6 @@ public class WebBrowserFrame extends JPanel{
         						 // add a listener for new tab
         				        addWebBrowserListener(tabbedPane, webBrowser); 
         						tabbedPane.addTab("History", webBrowser); 
-        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
-        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
-        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); // add close button
-        		    					break;
-        		    				}
-        		    			}
         					}
         				});
         			}
@@ -280,6 +259,7 @@ public class WebBrowserFrame extends JPanel{
     	webBrowser.addWebBrowserListener(new WebBrowserAdapter() {
     		@Override
 			public void locationChanging(WebBrowserNavigationEvent e) {
+//				System.out.println(e.getWebBrowser().getPageTitle());
 				final String pageTitle = e.getWebBrowser().getPageTitle();
 				final String pageLocation = e.getWebBrowser().getResourceLocation();
 				// record browsing history
@@ -297,10 +277,9 @@ public class WebBrowserFrame extends JPanel{
     		public void titleChanged(WebBrowserEvent e) {
     			for(int i=0; i<tabbedPane.getTabCount(); i++) {
     				if(tabbedPane.getComponentAt(i) == webBrowser) {
-    					if(i == 0) {
-    						return;
-    					}
-    					tabbedPane.setTitleAt(i, webBrowser.getPageTitle());
+    					// in case that is customized tab
+    					if (!webBrowser.getResourceLocation().equals("about:blank"))
+    						tabbedPane.setTitleAt(i, webBrowser.getPageTitle());
     					// add close button
     					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane));
     					break;

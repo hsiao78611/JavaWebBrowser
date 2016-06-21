@@ -99,7 +99,7 @@ public class HistoryXML {
 			HistoryBean historyBean = (HistoryBean) history_Vector.get(i);
 			if (historyBean.getURL().equals("about:blank"))
 				continue;
-			if (i>0) {
+			else if (i>0) {
 				HistoryBean previousBean = (HistoryBean) history_Vector.get(i-1);
 				if (historyBean.getURL().equals(previousBean.getURL()))
 					continue;
