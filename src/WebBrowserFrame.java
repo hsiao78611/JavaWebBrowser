@@ -63,9 +63,44 @@ public class WebBrowserFrame extends JPanel{
         	protected void addMenuBarComponents(WebBrowserMenuBar menuBar) {
         		// We let the default menus to be added and then we add ours.
         		super.addMenuBarComponents(menuBar);
-        		JMenu myMenu = new JMenu("Features");
+        		JMenu historyMenu = new JMenu("History");
         		
-        		// add clear history menu item into head bar
+        		// add history menu item into head bar
+        		JMenuItem showHistory = new JMenuItem("Show History");
+        		showHistory.addActionListener(new ActionListener() {
+        			public void actionPerformed(ActionEvent e) {
+        				SwingUtilities.invokeLater(new Runnable() {
+        					public void run() {
+        						JWebBrowser webBrowser = new JWebBrowser() {
+        		    	        	// set customized decorator
+        		    	        	@Override
+        		    	        	protected WebBrowserDecorator createWebBrowserDecorator(Component renderingComponent) {
+        		    	            	return createCustomWebBrowserDecorator(this, renderingComponent);
+        		    	    		}
+        		    	        };
+        		    	        historyXML.history_Vector = new Vector<HistoryBean>();
+        						try {
+        							historyXML.readXMLFile("history.xml");
+            						webBrowser.setHTMLContent(historyXML.printXMLFile());
+        						} catch (Exception e1) {
+        							// TODO Auto-generated catch block
+        							e1.printStackTrace();
+        						}
+        						
+        						 // add a listener for new tab
+        				        addWebBrowserListener(tabbedPane, webBrowser); 
+        						tabbedPane.addTab("History", webBrowser); 
+        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
+        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
+        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); // add close button
+        		    					break;
+        		    				}
+        		    			}
+        					}
+        				});
+        			}
+        		});
+            	
             	JMenuItem clearHistory = new JMenuItem("Clear History");
             	clearHistory.addActionListener(new ActionListener() {
 					@Override
@@ -86,8 +121,29 @@ public class WebBrowserFrame extends JPanel{
 						}	
 					}
 				});
+            	historyMenu.add(showHistory);
+            	historyMenu.add(clearHistory);
+            	menuBar.add(historyMenu);
+            	
+            	// add bookmark menu item into head bar
+            	JMenu bookmarkMenu = new JMenu("Bookmark");
+				JMenuItem showBookMark = new JMenuItem("Show Bookmark");
+				showBookMark.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFrame frame = new JFrame();
+						ArrayList<String> addressList = Bookmark.getXMLValue();
+						int dialogButton = JOptionPane.YES_NO_OPTION;
+						String selectLink = JOptionPane.showInputDialog(frame,
+								"Choose one", "Bookmark",
+								JOptionPane.INFORMATION_MESSAGE, null,
+								addressList.toArray(), addressList.get(0)).toString();
+						if(dialogButton == JOptionPane.YES_OPTION){
+							webBrowser.navigate(selectLink);
+						}
+					}
+				});
 
-            	// add delete bookmark menu item into head bar
 				JMenuItem manageBookMark = new JMenuItem("Delete Bookmark");
 				manageBookMark.addActionListener(new ActionListener() {
 					@Override
@@ -95,17 +151,19 @@ public class WebBrowserFrame extends JPanel{
 						JFrame frame = new JFrame();
 						ArrayList<String> addressList = Bookmark.getXMLValue();
 						int dialogButton = JOptionPane.YES_NO_OPTION;
-						String selectLink = JOptionPane.showInputDialog(frame, "Pick a link to delete", "Delete a Bookmark", dialogButton,
-								null, addressList.toArray(), "Titan").toString();
+						String selectLink = JOptionPane.showInputDialog(null,
+								"Pick a link to delete", "Delete",
+								JOptionPane.WARNING_MESSAGE, null,
+								addressList.toArray(), addressList.get(0)).toString();
 						if(dialogButton == JOptionPane.YES_OPTION){
 							Bookmark.deleteXMLElement(selectLink);
 						}
 					}
 				});
-				
-				myMenu.add(manageBookMark);
-				myMenu.add(clearHistory);
-            	menuBar.add(myMenu);
+				bookmarkMenu.add(showBookMark);
+				bookmarkMenu.add(manageBookMark);
+            	menuBar.add(bookmarkMenu);
+
 			}
         	@Override
         	protected void addButtonBarComponents(WebBrowserButtonBar buttonBar) {
@@ -120,6 +178,7 @@ public class WebBrowserFrame extends JPanel{
         		final JButton historyButton = new JButton(clock);
         		final JButton bookmarkButton = new JButton(star);
         		
+        		// new tab
         		newTabButton.addActionListener(new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
         				SwingUtilities.invokeLater(new Runnable() {
@@ -145,6 +204,8 @@ public class WebBrowserFrame extends JPanel{
         				});
         			}
         		});
+        		
+        		// show history
         		historyButton.addActionListener(new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
         				SwingUtilities.invokeLater(new Runnable() {
@@ -179,6 +240,7 @@ public class WebBrowserFrame extends JPanel{
         			}
         		});
 
+        		// add bookmark
 				bookmarkButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
