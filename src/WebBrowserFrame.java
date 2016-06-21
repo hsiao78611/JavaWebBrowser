@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
@@ -37,9 +38,9 @@ import org.xml.sax.SAXException;
 @SuppressWarnings({ "unused", "serial" })
 public class WebBrowserFrame extends JPanel{
 
-	private static JMenu bookmarkMenu;
+	private static HistoryXML historyXML = new HistoryXML();
 	static JTabbedPane tabbedPane;
-
+	
     public WebBrowserFrame(){
         super(new BorderLayout());
 		JPanel webBrowserPanel = new JPanel(new BorderLayout());
@@ -80,12 +81,31 @@ public class WebBrowserFrame extends JPanel{
         		// We let the default menus to be added and then we add ours.
         		super.addMenuBarComponents(menuBar);
         		JMenu myMenu = new JMenu("[[Features]]");
-            	myMenu.add(new JMenuItem("History"));
-            	myMenu.add(new JMenuItem("Cookie"));
+            	JMenuItem clearHistory = new JMenuItem("Clear History");
+            	clearHistory.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFrame frame = new JFrame();
+						ArrayList<String> addressList = getXMLValue();
+						int dialogButton = JOptionPane.showConfirmDialog(null, "This action cannot be recovered! "
+								+ "\nDo you want to clear the browsing history?", 
+								"Note!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+						if(dialogButton == JOptionPane.YES_OPTION){
+							historyXML.history_Vector = new Vector<HistoryBean>();
+							try {
+								historyXML.writeXMLFile("history.xml");
+							} catch (Exception e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}	
+					}
+				});
+            	myMenu.add(clearHistory);
             	menuBar.add(myMenu);
 
 				//add bookmark to head bar
-				bookmarkMenu = new JMenu("[[bookMark]]");
+            	JMenu bookmarkMenu = new JMenu("[[bookMark]]");
 				ArrayList<String> bookmarkList = getXMLValue();
 				for(int i=0;i<bookmarkList.size();i++){
 					JMenuItem test = new JMenuItem(bookmarkList.get(i));
@@ -116,8 +136,6 @@ public class WebBrowserFrame extends JPanel{
 
 				//set action listener of bookmark
 
-
-
 			}
         	@Override
         	protected void addButtonBarComponents(WebBrowserButtonBar buttonBar) {
@@ -125,7 +143,8 @@ public class WebBrowserFrame extends JPanel{
         		final JButton newTabButton = new JButton("[[NewTab]]");
         		final JButton historyButton = new JButton("[[History]]");
         		final JButton cookieButton = new JButton("[[Cookie]]");
-
+        		final JButton bookmarkButton = new JButton("[[BookMark]]");
+        		
         		newTabButton.addActionListener(new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
         				SwingUtilities.invokeLater(new Runnable() {
@@ -150,11 +169,6 @@ public class WebBrowserFrame extends JPanel{
         				});
         			}
         		});
-
-				final JButton bookmarkButton = new JButton("[[BookMark]]");
-
-        		final String LS = System.getProperty("line.separator");
-
         		historyButton.addActionListener(new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
         				SwingUtilities.invokeLater(new Runnable() {
@@ -166,20 +180,24 @@ public class WebBrowserFrame extends JPanel{
         		    	            	return createCustomWebBrowserDecorator(this, renderingComponent);
         		    	    		}
         		    	        };
-        						webBrowser.setHTMLContent(
-                				        "<html>" + LS +
-                				        "  <body>" + LS +
-                				        "    <a href=\"http://java.sun.com\">http://java.sun.com</a><br/>" + LS +
-                				        "    <a href=\"http://www.google.com\">http://www.google.com</a><br/>" + LS +
-                				        "    <a href=\"http://www.eclipse.org\">http://www.eclipse.org</a><br/>" + LS +
-                				        "    <a href=\"http://www.yahoo.com\">http://www.yahoo.com</a><br/>" + LS +
-                				        "    <a href=\"http://www.microsoft.com\">http://www.microsoft.com</a><br/>" + LS +
-                				        "  </body>" + LS +
-                				        "</html>");
+        		    	        historyXML.history_Vector = new Vector<HistoryBean>();
+        						try {
+        							historyXML.readXMLFile("history.xml");
+            						webBrowser.setHTMLContent(historyXML.printXMLFile());
+        						} catch (Exception e1) {
+        							// TODO Auto-generated catch block
+        							e1.printStackTrace();
+        						}
         						
         						 // add a listener for new tab
         				        addWebBrowserListener(tabbedPane, webBrowser); 
-        						tabbedPane.addTab("History", webBrowser);      		            
+        						tabbedPane.addTab("History", webBrowser); 
+        						for(int i=0; i<tabbedPane.getTabCount(); i++) {
+        		    				if(tabbedPane.getComponentAt(i) == webBrowser) {
+        		    					tabbedPane.setTabComponentAt(i, new ButtonTabComponent(tabbedPane)); // add close button
+        		    					break;
+        		    				}
+        		    			}
         					}
         				});
         			}
@@ -217,9 +235,15 @@ public class WebBrowserFrame extends JPanel{
     	webBrowser.addWebBrowserListener(new WebBrowserAdapter() {
     		@Override
 			public void locationChanging(WebBrowserNavigationEvent e) { // just for new resource location
-				final String newResourceLocation = e.getNewResourceLocation();
+				final String pageTitle = e.getWebBrowser().getPageTitle();
+				final String pageLocation = e.getWebBrowser().getResourceLocation();
+				DisplayPanel.setHistory(pageTitle); // only for test
+				// record browsing history
+				historyXML.history_Vector = new Vector<HistoryBean>();
 				try {
-					DisplayPanel.setHistory(newResourceLocation);
+					historyXML.readXMLFile("history.xml");
+					historyXML.setHistory(ZonedDateTime.now().toString(), pageLocation, pageTitle);
+					historyXML.writeXMLFile("history.xml");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
