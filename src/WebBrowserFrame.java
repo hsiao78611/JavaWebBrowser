@@ -1,39 +1,16 @@
 /**
  * Created by Jeff-Wang on 2016/6/12.
  */
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
+
+import chrriis.dj.nativeswing.swtimpl.components.*;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Vector;
-
-import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import chrriis.common.UIUtils;
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-import chrriis.dj.nativeswing.swtimpl.WebBrowserObject;
-import chrriis.dj.nativeswing.swtimpl.components.*;
-import chrriis.dj.nativeswing.swtimpl.components.DefaultWebBrowserDecorator.WebBrowserButtonBar;
-import chrriis.dj.nativeswing.swtimpl.components.DefaultWebBrowserDecorator.WebBrowserMenuBar;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
 
 @SuppressWarnings({ "unused", "serial" })
 public class WebBrowserFrame extends JPanel{
@@ -86,7 +63,7 @@ public class WebBrowserFrame extends JPanel{
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JFrame frame = new JFrame();
-						ArrayList<String> addressList = getXMLValue();
+						ArrayList<String> addressList = Bookmark.getXMLValue();
 						int dialogButton = JOptionPane.showConfirmDialog(null, "This action cannot be recovered! "
 								+ "\nDo you want to clear the browsing history?", 
 								"Note!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -106,7 +83,7 @@ public class WebBrowserFrame extends JPanel{
 
 				//add bookmark to head bar
             	JMenu bookmarkMenu = new JMenu("[[bookMark]]");
-				ArrayList<String> bookmarkList = getXMLValue();
+				ArrayList<String> bookmarkList = Bookmark.getXMLValue();
 				for(int i=0;i<bookmarkList.size();i++){
 					JMenuItem test = new JMenuItem(bookmarkList.get(i));
 					test.addActionListener(new ActionListener() {
@@ -122,12 +99,12 @@ public class WebBrowserFrame extends JPanel{
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JFrame frame = new JFrame();
-						ArrayList<String> addressList = getXMLValue();
+						ArrayList<String> addressList = Bookmark.getXMLValue();
 						int dialogButton = JOptionPane.YES_NO_OPTION;
 						String selectLink = JOptionPane.showInputDialog(frame, "Pick a link to delete", "Delete a Bookmark", dialogButton,
 								null, addressList.toArray(), "Titan").toString();
 						if(dialogButton == JOptionPane.YES_OPTION){
-							deleteXMLElement(selectLink);
+							Bookmark.deleteXMLElement(selectLink);
 						}
 					}
 				});
@@ -142,7 +119,7 @@ public class WebBrowserFrame extends JPanel{
         		// We completely override this method so we decide which buttons to add
         		final JButton newTabButton = new JButton("[[NewTab]]");
         		final JButton historyButton = new JButton("[[History]]");
-        		final JButton cookieButton = new JButton("[[Cookie]]");
+//        		final JButton cookieButton = new JButton("[[Cookie]]");
         		final JButton bookmarkButton = new JButton("[[BookMark]]");
         		
         		newTabButton.addActionListener(new ActionListener() {
@@ -202,11 +179,11 @@ public class WebBrowserFrame extends JPanel{
         				});
         			}
         		});
-        		cookieButton.addActionListener(new ActionListener() {
-        			public void actionPerformed(ActionEvent e) {
-        				JOptionPane.showMessageDialog(cookieButton, "Cookie Button was pressed!");
-        			}
-        		});
+//        		cookieButton.addActionListener(new ActionListener() {
+//        			public void actionPerformed(ActionEvent e) {
+//        				JOptionPane.showMessageDialog(cookieButton, "Cookie Button was pressed!");
+//        			}
+//        		});
 				bookmarkButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -214,7 +191,7 @@ public class WebBrowserFrame extends JPanel{
 						int dialogResult = JOptionPane.showConfirmDialog(null, "Add this website to bookmark?", "Bookmark", dialogButton);
 						if(dialogResult==JOptionPane.YES_OPTION){
 							String address = webBrowser.getResourceLocation();
-							addBookMark(address);
+							Bookmark.addBookMark(address);
 						}
 					}
 				});
@@ -222,7 +199,7 @@ public class WebBrowserFrame extends JPanel{
         		buttonBar.add(buttonBar.getForwardButton());
         		buttonBar.add(newTabButton);
         		buttonBar.add(historyButton);
-        		buttonBar.add(cookieButton);
+//        		buttonBar.add(cookieButton);
 				buttonBar.add(bookmarkButton);
         		buttonBar.add(buttonBar.getReloadButton());
         		buttonBar.add(buttonBar.getStopButton());
@@ -282,136 +259,11 @@ public class WebBrowserFrame extends JPanel{
     	});
     }
 
-	private static void addBookMark(String address){
-		try {
 
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-			File f = new File("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
-			if(f.exists() && !f.isDirectory()) {
-				Document document = documentBuilder.parse("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
 
-				Element root = document.getDocumentElement();
 
-				// add elements
-				Element newData = document.createElement("Data");
 
-				Element name = document.createElement("Address");
-				name.appendChild(document.createTextNode(address));
-				newData.appendChild(name);
 
-				root.appendChild(newData);
 
-				DOMSource source = new DOMSource(document);
 
-				TransformerFactory transformerFactory = TransformerFactory.newInstance();
-				Transformer transformer = transformerFactory.newTransformer();
-				StreamResult result = new StreamResult("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
-				transformer.transform(source, result);
-			}else{
-				createXMLForBookmark(address);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void createXMLForBookmark(String address){
-		try {
-
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-			// Root elements
-			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("Bookmark");
-			doc.appendChild(rootElement);
-
-			// bookmark element
-			Element data = doc.createElement("Data");
-			rootElement.appendChild(data);
-
-			// Address elements into data Element
-			Element link = doc.createElement("Address");
-			link.appendChild(doc.createTextNode(address));
-			data.appendChild(link);
-
-			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml"));
-			transformer.transform(source, result);
-			System.out.println("File saved!");
-
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-
-		} catch (TransformerException tfe) {
-			tfe.printStackTrace();
-		}
-	}
-
-	private static ArrayList<String> getXMLValue(){
-		ArrayList<String> getXMLElement = new ArrayList<>();
-
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = null;
-		try {
-			builder = factory.newDocumentBuilder();
-			Document document = builder.parse("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
-			NodeList nList = document.getElementsByTagName("Data");
-			for (int i = 0; i < nList.getLength(); i++)
-			{
-				Node nNode = nList.item(i);
-				Element eElement = (Element) nNode;
-				String address = eElement.getElementsByTagName("Address").item(0).getTextContent().toString();
-				getXMLElement.add(address);
-			}
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		//need to find someway to reload the JPanel
-		return getXMLElement;
-	}
-
-	private static void deleteXMLElement(String deleteLink){
-		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml");
-			NodeList nList = doc.getElementsByTagName("Data");
-			for (int i = 0; i < nList.getLength(); i++)
-			{
-				Node nNode = nList.item(i);
-				Element eElement = (Element) nNode;
-				String address = eElement.getElementsByTagName("Address").item(0).getTextContent().toString();
-				if(address.equals(deleteLink)){
-					nNode.getParentNode().removeChild(eElement);
-					break;
-				}
-			}
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("C:\\Users\\Jeff-Wang\\Documents\\bookmark.xml"));
-			transformer.transform(source, result);
-
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		}
-	}
 }

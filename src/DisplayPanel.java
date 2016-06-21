@@ -11,16 +11,16 @@ import javax.swing.JTextArea;
 public class DisplayPanel extends JPanel{
 		
 	private static JTextArea displayHistoryArea = new JTextArea(5, 20);
-	private static JTextArea displayCookieArea = new JTextArea(5, 20);
+//	private static JTextArea displayCookieArea = new JTextArea(5, 20);
     private static String historyText = "";
 	
     public DisplayPanel(){
         super(new BorderLayout());
         JPanel displayPanel = new JPanel(new BorderLayout());        
         displayHistoryArea.setEditable(false);
-        displayCookieArea.setEditable(false);
+//        displayCookieArea.setEditable(false);
         JScrollPane scrollHistoryArea = new JScrollPane(displayHistoryArea);
-        JScrollPane scrollCookieArea = new JScrollPane(displayCookieArea);
+//        JScrollPane scrollCookieArea = new JScrollPane(displayCookieArea);
         
         // new a default tab pane which contains a JTextArea
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -31,9 +31,9 @@ public class DisplayPanel extends JPanel{
         displayPanel.add(tabbedPane, BorderLayout.CENTER);
         add(displayPanel, BorderLayout.CENTER);    
         // add Cookie tab
-        tabbedPane.addTab("Cookie", scrollCookieArea);
-        displayPanel.add(tabbedPane, BorderLayout.CENTER);
-        add(displayPanel, BorderLayout.CENTER);  
+//        tabbedPane.addTab("Cookie", scrollCookieArea);
+//        displayPanel.add(tabbedPane, BorderLayout.CENTER);
+//        add(displayPanel, BorderLayout.CENTER);
         
     }
     
