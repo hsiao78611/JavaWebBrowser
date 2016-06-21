@@ -1,11 +1,19 @@
 /**
  * Created by Jeff-Wang on 2016/6/12.
  */
+
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import chrriis.common.UIUtils;
 import chrriis.dj.nativeswing.swtimpl.NativeInterface;
+
+import chrriis.common.UIUtils;
+import chrriis.dj.nativeswing.swtimpl.NativeInterface;
+
+import javax.swing.*;
+import java.awt.*;
+>>>>>>> master
 
 public class Main {
 		   

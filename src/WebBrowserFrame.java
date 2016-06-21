@@ -6,6 +6,11 @@ import chrriis.dj.nativeswing.swtimpl.components.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.ZonedDateTime;
@@ -258,12 +263,4 @@ public class WebBrowserFrame extends JPanel{
     		}
     	});
     }
-
-
-
-
-
-
-
-
 }
